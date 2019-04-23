@@ -157,7 +157,7 @@ namespace SWG_sim
 
         private void Prepare(Battle battle)
         {
-            int numberOfAttackers = 4;
+            int numberOfAttackers = 24;
             int numberOfDefenders = 4;
 
             for (int i = 0; i < numberOfAttackers; i++)
@@ -166,22 +166,41 @@ namespace SWG_sim
             }
 
 
-            for (int i = 0; i < numberOfDefenders; i++)
-            {
-                Participants.Add(new Character("Obrońca " + i, false));
-            }
+            //for (int i = 0; i < numberOfDefenders; i++)
+            //{
+            //    Participants.Add(new Character("Obrońca " + i, false));
+            //}
 
 
-            /*
+
             // BOSS
-            Character pomiot = new Character("Pomiot Szatana", 250, 50, 50, 50, 50, 50, 10, new Weapon(15, 4), true, false);
+            
+            Character pomiot = new Character("Pomiot Szatana",
+                                             1250,
+                                             50,
+                                             50,
+                                             30,
+                                             50,
+                                             50,
+                                             9,
+                                             new Weapon(25, 6, 8),
+                                             true,
+                                             false);
             Participants.Add(pomiot);
-            Character pomiot2 = new Character("Pomiot Szatana", 250, 50, 50, 50, 50, 50, 10, new Weapon(15, 4), true, false);
-            Participants.Add(pomiot2);
-
-            Character boss2 = new Character("Szatan", 3000, 50, 50, 50, 50, 50, 8, new Weapon(100, 4), true, false);
+            
+            Character boss2 = new Character("Szatan diaboł",
+                                            3000,
+                                            50,
+                                            50,
+                                            50,
+                                            50,
+                                            50,
+                                            7,
+                                            new Weapon(100, 4, 10),
+                                            true,
+                                            false);
             Participants.Add(boss2);
-            */
+            
 
         }
     }

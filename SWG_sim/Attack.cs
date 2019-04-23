@@ -31,7 +31,7 @@ namespace SWG_sim
                 CheckForHit();
                 if (isAccurate)
                 {
-                    CheckForCritialHit();
+                    CheckForCritialHit(attack.Character.Weapon.CriticalChance);
                     CalculateAttack(attack);
                 }
                 else
@@ -130,17 +130,17 @@ namespace SWG_sim
         {
             isAccurate = false;
             Utils utils = new Utils();
-            if (utils.RandomNumber(99) <= 94)
+            if (utils.RandomNumber(100) <= 95)
             {
                 isAccurate = true;
             }
         }
 
-        private void CheckForCritialHit()
+        private void CheckForCritialHit(int weaponCriticalChance)
         {
             isCritical = false;
             Utils utils = new Utils();
-            if (utils.RandomNumber(99) <= 4)
+            if (utils.RandomNumber(100) <= weaponCriticalChance)
             {
                 isCritical = true;
             }
