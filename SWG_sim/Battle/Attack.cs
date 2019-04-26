@@ -86,8 +86,8 @@ namespace SWG_sim
         private void CalculateDamageDone(Attack attack)
         {
             Utils utils = new Utils();
-            attack.Damage = (attack.Character.Strength / 2) + (attack.Character.Weapon.AttackPower / 2) + utils.RandomNumber(6);
-            //attack.Damage = utils.RandomNumber(0, attack.Character.Strength) + attack.Character.Weapon.AttackPower;
+            attack.Damage = (attack.Character.Strength / 2) + GetWeaponDamage(attack.Character.Weapon);
+            
             if (attack.isCritical)
             {
                 attack.Damage *= 2;
@@ -95,6 +95,17 @@ namespace SWG_sim
             attack.Character.DamageDone += attack.Damage;
             attack.Opponent.RemainingHitPoints -= attack.Damage;
             attack.Opponent.DamageTaken += attack.Damage;
+        }
+
+        private int GetWeaponDamage(Weapon weapon)
+        {
+            int damage = weapon.BaseAttackPower;
+            for (int i = 0; i < weapon.AttackPowerDiceSides; i++)
+            {
+                Utils utils = new Utils();
+                damage += utils.RandomNumber(0, weapon.AttackPowerDiceRolls);
+            }
+            return damage;
         }
 
         private List<Character> GetOppisteSide(bool isAttacking, List<Character> participants)
