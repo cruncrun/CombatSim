@@ -53,13 +53,13 @@ namespace SWG_sim
             Utils utils = new Utils();
             Weapon = new Weapon();
             Name = name;
-            HitPoints = 75 + utils.RandomNumber(51);
+            HitPoints = 100 + utils.RandomNumber(51);
             //HitPoints = 20;
             RemainingHitPoints = HitPoints;
             ManaPoints = 20;
             RemainingManaPoints = ManaPoints;
             DefencePoints = 0;
-            Strength = 10 + utils.RandomNumber(6);
+            Strength = 6 + utils.RandomNumber(8) + utils.RandomNumber(8);
             Dexterity = 5;
             Toughness = 5;
             Initiative = 10 + Weapon.InitiativeModifier;
