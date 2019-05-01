@@ -14,8 +14,8 @@ namespace SWG_sim
         public Character Opponent { get; set; }
         public List<Character> AliveParticipants { get; set; }
         public int Damage { get; set; }
-        public bool isAccurate { get; set; }
-        public bool isCritical { get; set; }
+        public bool IsAccurate { get; set; }
+        public bool IsCritical { get; set; }
 
         public Attack(Character character, List<Character> aliveParticipants)
         {
@@ -29,23 +29,18 @@ namespace SWG_sim
             if (attack.Opponent != null && attack.Opponent.Name != "Nie ma")
             {
                 CheckForHit();
-                if (isAccurate)
+                if (IsAccurate)
                 {
                     CheckForCritialHit(attack.Character.Weapon.CriticalChance);
                     CalculateAttack(attack);
                 }
                 else
                 {
-                    PrintMissedAttack(attack);
+                    ConsoleWriter.MissedAttackMessage(attack);
                 }
                 AttackCleanUp(attack);
             }  
-        }
-
-        private void PrintMissedAttack(Attack attack)
-        {
-            Console.WriteLine(attack.Character.Name + " próbuje zaatakować " + attack.Opponent.Name + ", ale nie trafia...", Color.WhiteSmoke);
-        }
+        }        
 
         public Character SelectTarget(Attack attack)
         {
@@ -65,30 +60,27 @@ namespace SWG_sim
 
         private void PrintAttack(Attack attack)
         {
-            if (attack.isCritical)
+            if (attack.IsCritical)
             {
-                Console.WriteLine(attack.Character.Name + " trafia krytycznie zadając " + attack.Damage + " punktów obrażeń! " +
-                       attack.Opponent.Name + " ma " + attack.Opponent.RemainingHitPoints + "/" + attack.Opponent.HitPoints + " punktów życia.", Color.DeepPink);
+                ConsoleWriter.CriticalHitMessage(attack);                
             }
             else
             {
-                Console.WriteLine(attack.Character.Name + " zadaje " + attack.Damage + " punktów obrażeń. " +
-                       attack.Opponent.Name + " ma " + attack.Opponent.RemainingHitPoints + "/" + attack.Opponent.HitPoints + " punktów życia.");
+                ConsoleWriter.RegularHitMesage(attack);                
             }
             if (attack.Opponent.RemainingHitPoints <= 0)
-            {                
-                Console.WriteLine(attack.Opponent.Name + " umiera na śmierć.", Color.Red);
+            {
+                ConsoleWriter.DeathMessage(attack.Opponent.Name);                
                 attack.Character.KillCount++;
                 attack.Opponent.IsAlive = false;
             }
         }
 
         private void CalculateDamageDone(Attack attack)
-        {
-            Utils utils = new Utils();
+        {            
             attack.Damage = (attack.Character.Strength / 2) + GetWeaponDamage(attack.Character.Weapon);
             
-            if (attack.isCritical)
+            if (attack.IsCritical)
             {
                 attack.Damage *= 2;
             }
@@ -139,21 +131,21 @@ namespace SWG_sim
 
         private void CheckForHit()
         {
-            isAccurate = false;
+            IsAccurate = false;
             Utils utils = new Utils();
             if (utils.RandomNumber(100) <= 95)
             {
-                isAccurate = true;
+                IsAccurate = true;
             }
         }
 
         private void CheckForCritialHit(int weaponCriticalChance)
         {
-            isCritical = false;
+            IsCritical = false;
             Utils utils = new Utils();
             if (utils.RandomNumber(100) <= weaponCriticalChance)
             {
-                isCritical = true;
+                IsCritical = true;
             }
         }
     }

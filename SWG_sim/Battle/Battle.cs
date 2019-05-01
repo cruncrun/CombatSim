@@ -24,18 +24,15 @@ namespace SWG_sim
         public void Fight(Battle battle)
         {
             Prepare(battle);
-            BattleReport(battle);
-            BattleSummary();
+            BattleReport(battle);            
+            ConsoleWriter.BattleSummary(Participants);
         }
 
         private void BattleReportHeader(List<Character> participants)
         {
             foreach (var character in participants)
             {
-                Console.WriteLine(character.Name + " \tI: " + character.Initiative +
-                    "\tS: " + character.Strength +
-                    " \tObrażenia broni: " + (character.Weapon.BaseAttackPower + character.Weapon.AttackPowerDiceRolls) + "-" +
-                    (character.Weapon.BaseAttackPower + (character.Weapon.AttackPowerDiceSides * character.Weapon.AttackPowerDiceRolls)) + " * " + character.Weapon.AttacksPerTurn);                
+                ConsoleWriter.ParticipantDetails(character);                              
             }
             System.Console.WriteLine("\r\n");
         }
@@ -50,7 +47,7 @@ namespace SWG_sim
             {
                 List<Character> aliveParticipants = GetAliveParticipants(Participants);
 
-                Console.WriteLine("Tura " + turnIterator, Color.Green);
+                ConsoleWriter.TurnNumberMessage(turnIterator);                
 
                 for (int i = 1; AreThereAnyAttacksLeft(aliveParticipants) && AreThereAnyParticipantsLeft(aliveParticipants); i++)
                 {                    
@@ -71,8 +68,7 @@ namespace SWG_sim
                     {
                         
                     }
-                }
-                //TurnSummary(Participants);
+                }                
                 TurnReset(Participants);
                 System.Console.WriteLine("\r\n");
             }            
@@ -89,16 +85,7 @@ namespace SWG_sim
                 }
             }
             return aliveParticipants;
-        }
-
-        private void BattleSummary()
-        {
-            foreach (var character in Participants)
-            {
-                System.Console.WriteLine(character.Name + " " + character.RemainingHitPoints + "/" + character.HitPoints + ". \tZabitych wrogów: " + character.KillCount + ". \tZadane obrażenia: " + character.DamageDone + ", otrzymane obrażenia: " + character.DamageTaken );
-            }
-        }
-              
+        } 
 
         private void TurnReset(List<Character> participants)
         {
@@ -164,8 +151,8 @@ namespace SWG_sim
         {
             Utils utils = new Utils();
 
-            int numberOfAttackers = 24;
-            int numberOfDefenders = 3;
+            int numberOfAttackers = 5;
+            //int numberOfDefenders = 10;
 
             for (int i = 0; i < numberOfAttackers; i++)
             {
@@ -178,40 +165,58 @@ namespace SWG_sim
                 Participants.Add(new Character("Obrońca " + i, false));
             }
             */
+            
 
-
+            
             // BOSS
 
             Character bossAss = new Character("Pomniejszy demon",                     // Name
-                                            utils.RandomNumber(1000, 1500),           // HitPoints
+                                            utils.RandomNumber(150, 225),           // HitPoints
                                             1,                                       // ManaPoints
                                             1,                                       // Defence
-                                            utils.RandomNumber(50, 100),                                       // Strength
+                                            utils.RandomNumber(12, 16),                                       // Strength
                                             1,                                       // Dexterity
                                             1,                                       // Toughness
                                             utils.RandomNumber(5, 10),                                        // Initiative
-                                            new Weapon(utils.RandomNumber(30, 50),                           // BaseAttackPower
-                                                       utils.RandomNumber(2, 4),                            // DiceSides
-                                                       utils.RandomNumber(40, 70),                            // DiceRolls
-                                                       utils.RandomNumber(4, 6),                             // AttacksPerTurn
-                                                       utils.RandomNumber(5, 15)),                           // CriticalChance
+                                            new Weapon(utils.RandomNumber(8, 10),                           // BaseAttackPower
+                                                       utils.RandomNumber(2, 3),                            // DiceSides
+                                                       utils.RandomNumber(3, 8),                            // DiceRolls
+                                                       utils.RandomNumber(3, 6),                             // AttacksPerTurn
+                                                       utils.RandomNumber(5, 10)),                           // CriticalChance
                                             true,                                     // isAlive
                                             false);                                   // isAttacker
             Participants.Add(bossAss);
-            
+
+            Character bossAss2 = new Character("Piekielny golem",                     // Name
+                                           utils.RandomNumber(500, 700),           // HitPoints
+                                           1,                                       // ManaPoints
+                                           1,                                       // Defence
+                                           utils.RandomNumber(40, 50),                                       // Strength
+                                           1,                                       // Dexterity
+                                           1,                                       // Toughness
+                                           utils.RandomNumber(15, 25),                                        // Initiative
+                                           new Weapon(utils.RandomNumber(10, 16),                           // BaseAttackPower
+                                                      utils.RandomNumber(2, 3),                            // DiceSides
+                                                      utils.RandomNumber(10, 12),                            // DiceRolls
+                                                      utils.RandomNumber(1, 3),                             // AttacksPerTurn
+                                                      utils.RandomNumber(2, 6)),                           // CriticalChance
+                                           true,                                     // isAlive
+                                           false);                                   // isAttacker
+            Participants.Add(bossAss2);
+
             Character boss = new Character("Michał, Lord Ciemności",        // Name
-                                            utils.RandomNumber(2500, 3500),           // HitPoints
+                                            utils.RandomNumber(400, 600),           // HitPoints
                                             1,                                       // ManaPoints
                                             1,                                       // Defence
-                                            utils.RandomNumber(75, 150),                                       // Strength
+                                            utils.RandomNumber(20, 30),                                       // Strength
                                             1,                                       // Dexterity
                                             1,                                       // Toughness
-                                            utils.RandomNumber(5, 10),                                        // Initiative
-                                            new Weapon(utils.RandomNumber(50, 100),                           // BaseAttackPower
-                                                       utils.RandomNumber(1, 4),                            // DiceSides
-                                                       utils.RandomNumber(45, 100),                            // DiceRolls
+                                            utils.RandomNumber(10, 15),                                        // Initiative
+                                            new Weapon(utils.RandomNumber(18, 25),                           // BaseAttackPower
+                                                       utils.RandomNumber(2, 4),                            // DiceSides
+                                                       utils.RandomNumber(10, 16),                            // DiceRolls
                                                        utils.RandomNumber(4, 6),                             // AttacksPerTurn
-                                                       utils.RandomNumber(5, 10)),                           // CriticalChance
+                                                       utils.RandomNumber(8, 15)),                           // CriticalChance
                                             true,                  // isAlive
                                             false);                // isAttacker
             Participants.Add(boss);
