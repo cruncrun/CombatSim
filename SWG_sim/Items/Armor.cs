@@ -10,5 +10,12 @@ namespace SWG_sim
     {
         public int DefencePoints { get; set; }
         public int InitiativeModifier { get; set; }
+
+        public Armor()
+        {
+            Utils utils = new Utils();
+            InitiativeModifier = utils.RandomNumber(-10, 11);
+            DefencePoints = InitiativeModifier * 2;
+        }
     }
 }

@@ -10,10 +10,29 @@ namespace SWG_sim
 {
     class Attack
     {
+        private int damage;
+
         public Character Character { get; set; }
         public Character Opponent { get; set; }
         public List<Character> AliveParticipants { get; set; }
-        public int Damage { get; set; }
+        public int Damage
+        {
+            get
+            {
+                return damage;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    damage = 1;
+                }
+                else
+                {
+                    damage = value;
+                }
+            }
+        }
         public bool IsAccurate { get; set; }
         public bool IsCritical { get; set; }
 
@@ -28,7 +47,7 @@ namespace SWG_sim
             attack.Opponent = SelectTarget(attack); // prowizorka 
             if (attack.Opponent != null && attack.Opponent.Name != "Nie ma")
             {
-                CheckForHit();
+                CheckForHit(attack.Character.Dexterity, attack.Opponent.Dexterity);
                 if (IsAccurate)
                 {
                     CheckForCritialHit(attack.Character.Weapon.CriticalChance);
@@ -84,6 +103,7 @@ namespace SWG_sim
             {
                 attack.Damage *= 2;
             }
+            attack.Damage -= attack.Opponent.DefencePoints;
             attack.Character.DamageDone += attack.Damage;
             attack.Opponent.RemainingHitPoints -= attack.Damage;
             attack.Opponent.DamageTaken += attack.Damage;
@@ -129,11 +149,11 @@ namespace SWG_sim
             attack.Character.Weapon.RemainingAttacks--;
         }
 
-        private void CheckForHit()
+        private void CheckForHit(int attackerDex, int defenderDex)
         {
             IsAccurate = false;
             Utils utils = new Utils();
-            if (utils.RandomNumber(100) <= 95)
+            if (utils.RandomNumber(100) <= 90 + attackerDex - defenderDex)
             {
                 IsAccurate = true;
             }

@@ -24,6 +24,7 @@ namespace SWG_sim
         public void Fight(Battle battle)
         {
             Prepare(battle);
+            BattleReportHeader(Participants);
             BattleReport(battle);            
             ConsoleWriter.BattleSummary(Participants);
         }
@@ -39,10 +40,6 @@ namespace SWG_sim
     
         private void BattleReport(Battle battle)
         {
-            //bool FightContinues = true;
-            
-            BattleReportHeader(Participants);
-
             for (int turnIterator = 1; turnIterator <= 10 && AreThereAnyParticipantsLeft(Participants); turnIterator++)
             {
                 List<Character> aliveParticipants = GetAliveParticipants(Participants);
@@ -152,18 +149,18 @@ namespace SWG_sim
             Utils utils = new Utils();
 
             int numberOfAttackers = 5;
-            //int numberOfDefenders = 10;
+            int numberOfDefenders = 5;
 
             for (int i = 0; i < numberOfAttackers; i++)
             {
                 Participants.Add(new Character("Atakujący " + i, true));
             }
-
+            
             /*
             for (int i = 0; i < numberOfDefenders; i++)
             {
                 Participants.Add(new Character("Obrońca " + i, false));
-            }
+            } 
             */
             
 
@@ -172,12 +169,11 @@ namespace SWG_sim
 
             Character bossAss = new Character("Pomniejszy demon",                     // Name
                                             utils.RandomNumber(150, 225),           // HitPoints
-                                            1,                                       // ManaPoints
-                                            1,                                       // Defence
+                                            1,                                       // ManaPoints                                            
                                             utils.RandomNumber(12, 16),                                       // Strength
-                                            1,                                       // Dexterity
-                                            1,                                       // Toughness
-                                            utils.RandomNumber(5, 10),                                        // Initiative
+                                            utils.RandomNumber(20, 30),                                       // Dexterity
+                                            utils.RandomNumber(1, 6),                                     // Toughness
+                                            utils.RandomNumber(10, 15),                                        // Initiative
                                             new Weapon(utils.RandomNumber(8, 10),                           // BaseAttackPower
                                                        utils.RandomNumber(2, 3),                            // DiceSides
                                                        utils.RandomNumber(3, 8),                            // DiceRolls
@@ -189,12 +185,11 @@ namespace SWG_sim
 
             Character bossAss2 = new Character("Piekielny golem",                     // Name
                                            utils.RandomNumber(500, 700),           // HitPoints
-                                           1,                                       // ManaPoints
-                                           1,                                       // Defence
+                                           1,                                       // ManaPoints                                          
                                            utils.RandomNumber(40, 50),                                       // Strength
-                                           1,                                       // Dexterity
-                                           1,                                       // Toughness
-                                           utils.RandomNumber(15, 25),                                        // Initiative
+                                           utils.RandomNumber(5, 8),                                       // Dexterity
+                                           utils.RandomNumber(20, 30),                                       // Toughness
+                                           utils.RandomNumber(25, 45),                                        // Initiative
                                            new Weapon(utils.RandomNumber(10, 16),                           // BaseAttackPower
                                                       utils.RandomNumber(2, 3),                            // DiceSides
                                                       utils.RandomNumber(10, 12),                            // DiceRolls
@@ -206,12 +201,11 @@ namespace SWG_sim
 
             Character boss = new Character("Michał, Lord Ciemności",        // Name
                                             utils.RandomNumber(400, 600),           // HitPoints
-                                            1,                                       // ManaPoints
-                                            1,                                       // Defence
+                                            1,                                       // ManaPoints                                            
                                             utils.RandomNumber(20, 30),                                       // Strength
-                                            1,                                       // Dexterity
-                                            1,                                       // Toughness
-                                            utils.RandomNumber(10, 15),                                        // Initiative
+                                            utils.RandomNumber(15, 20),                                       // Dexterity
+                                            utils.RandomNumber(10, 20),                                       // Toughness
+                                            utils.RandomNumber(15, 25),                                        // Initiative
                                             new Weapon(utils.RandomNumber(18, 25),                           // BaseAttackPower
                                                        utils.RandomNumber(2, 4),                            // DiceSides
                                                        utils.RandomNumber(10, 16),                            // DiceRolls
