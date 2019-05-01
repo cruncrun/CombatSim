@@ -15,18 +15,22 @@ namespace SWG_sim
         public int AttacksPerTurn { get; set; }
         public int RemainingAttacks { get; set; }
         public int CriticalChance { get; set; }
+        public int MinimumDamage { get; set; }
+        public int MaximumDamage { get; set; }
 
         public Weapon()
         {
             Utils utils = new Utils();
-            BaseAttackPower = utils.RandomNumber(5, 16);
+            BaseAttackPower = utils.RandomNumber(4, 10);
             AttackPowerDiceSides = utils.RandomNumber(2, 5);
-            AttackPowerDiceRolls = utils.RandomNumber(1, 15);
-            InitiativeModifier = utils.RandomNumber(0, 10) - 5;
+            AttackPowerDiceRolls = utils.RandomNumber(4, 10);
+            InitiativeModifier = utils.RandomNumber(0, 11) - 5;
             AttacksPerTurn = utils.RandomNumber(1, 5);
             //AttacksPerTurn = 1;
             RemainingAttacks = AttacksPerTurn;
             CriticalChance = utils.RandomNumber(4) + utils.RandomNumber(4) + 5;
+            MinimumDamage = BaseAttackPower + AttackPowerDiceRolls;
+            MaximumDamage = BaseAttackPower + (AttackPowerDiceSides * AttackPowerDiceRolls);
         }
 
         public Weapon(int attackPower, int diceSides, int diceRolls, int attacksPerTurn, int criticalChance)
@@ -37,8 +41,8 @@ namespace SWG_sim
             AttacksPerTurn = attacksPerTurn;
             RemainingAttacks = AttacksPerTurn;
             CriticalChance = criticalChance;
-            
-
+            MinimumDamage = BaseAttackPower + AttackPowerDiceRolls;
+            MaximumDamage = BaseAttackPower + (AttackPowerDiceSides * AttackPowerDiceRolls);
         }
     }
 }
