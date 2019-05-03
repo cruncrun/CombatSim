@@ -8,60 +8,98 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    class Attack
+    public class Action
     {
-        private int damage;
+        #region Properties
+        private int damageAmount;
+        private int healingAmount;
 
+        public ActionType ActionTypeId { get; set; }
         public Character Character { get; set; }
         public Character Opponent { get; set; }
+        public Character Opponent_EOTValues { get; set; }
         public List<Character> AliveParticipants { get; set; }
-        public int Damage
+        public int DamageAmount
         {
             get
             {
-                return damage;
+                return damageAmount;
             }
             set
             {
                 if (value <= 0)
                 {
-                    damage = 1;
+                    damageAmount = 1;
                 }
                 else
                 {
-                    damage = value;
+                    damageAmount = value;
+                }
+            }
+        }
+        public int HealingAmount
+        {
+            get
+            {
+                return healingAmount;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    healingAmount = 1;
+                }
+                else
+                {
+                    healingAmount = value;
                 }
             }
         }
         public bool IsAccurate { get; set; }
         public bool IsCritical { get; set; }
+        #endregion
 
-        public Attack(Character character, List<Character> aliveParticipants)
+        #region Constructors
+        public Action(Character character, List<Character> aliveParticipants)
         {
             Character = character;
             AliveParticipants = aliveParticipants;
         }
+        #endregion
 
-        public void PerformAttack(Attack attack)
-        {   
-            attack.Opponent = SelectTarget(attack); // prowizorka 
-            if (attack.Opponent != null && attack.Opponent.Name != "Nie ma")
+        #region Enum
+        public enum ActionType
+        {
+            SingleTargetAttack,
+            MultiTargetAttack,
+            SingleTargetHealing,
+            MultiTargetHealing
+        }
+        #endregion
+
+        #region Public members
+        public void PerformAttack(Action action)
+        {
+            action.Opponent = SelectTarget(action);
+            //Opponent = (Character)SelectTarget(action).Clone(); // prowizorka            
+
+            if (action.Opponent != null && action.Opponent.Name != "Nie ma")
             {
-                CheckForHit(attack.Character.Dexterity, attack.Opponent.Dexterity);
+                CheckForHit(action.Character.Dexterity, action.Opponent.Dexterity);
                 if (IsAccurate)
                 {
-                    CheckForCritialHit(attack.Character.Weapon.CriticalChance);
-                    CalculateAttack(attack);
+                    CheckForCritialHit(action.Character.Weapon.CriticalChance);
+                    CalculateAttack(action);
                 }
                 else
                 {
-                    ConsoleWriter.MissedAttackMessage(attack);
+                    //ConsoleWriter.MissedAttackMessage(attack);
                 }
-                AttackCleanUp(attack);
+                AttackCleanUp(action);
             }  
         }        
 
-        public Character SelectTarget(Attack attack)
+        public Character SelectTarget(Action attack)
         {
             Utils utils = new Utils();
             List<Character> opponentsList = GetOppisteSide(attack.Character.IsAttacker, attack.AliveParticipants);
@@ -69,44 +107,24 @@ namespace SWG_sim
             {
                 Character opponent = opponentsList[utils.RandomNumber(opponentsList.Count)];
                 return opponent;
-            }
-            //else
-            //{
-            //    return new Character("Nie ma");
-            //}
+            }            
             return new Character("Nie ma");
         }
+        #endregion
 
-        private void PrintAttack(Attack attack)
-        {
-            if (attack.IsCritical)
-            {
-                ConsoleWriter.CriticalHitMessage(attack);                
-            }
-            else
-            {
-                ConsoleWriter.RegularHitMesage(attack);                
-            }
-            if (attack.Opponent.RemainingHitPoints <= 0)
-            {
-                ConsoleWriter.DeathMessage(attack.Opponent.Name);                
-                attack.Character.KillCount++;
-                attack.Opponent.IsAlive = false;
-            }
-        }
-
-        private void CalculateDamageDone(Attack attack)
+        #region Private members
+        private void CalculateDamageDone(Action attack)
         {            
-            attack.Damage = (attack.Character.Strength / 2) + GetWeaponDamage(attack.Character.Weapon);
+            attack.DamageAmount = (attack.Character.Strength / 2) + GetWeaponDamage(attack.Character.Weapon);
             
             if (attack.IsCritical)
             {
-                attack.Damage *= 2;
+                attack.DamageAmount *= 2;
             }
-            attack.Damage -= attack.Opponent.DefencePoints;
-            attack.Character.DamageDone += attack.Damage;
-            attack.Opponent.RemainingHitPoints -= attack.Damage;
-            attack.Opponent.DamageTaken += attack.Damage;
+            attack.DamageAmount -= attack.Opponent.DefencePoints;
+            attack.Character.DamageDone += attack.DamageAmount;
+            attack.Opponent.RemainingHitPoints -= attack.DamageAmount;
+            attack.Opponent.DamageTaken += attack.DamageAmount;
         }
 
         private int GetWeaponDamage(Weapon weapon)
@@ -134,19 +152,26 @@ namespace SWG_sim
             return aliveOpponents;
         }
 
-        private void CalculateAttack(Attack attack)
+        private void CalculateAttack(Action attack)
         {
             if (attack.Character.IsAlive && attack.Opponent.IsAlive)
             {
                 CalculateDamageDone(attack);
-                PrintAttack(attack);
+                if (attack.Opponent.RemainingHitPoints <= 0)
+                {
+                    //ConsoleWriter.DeathMessage(attack.Opponent.Name);                
+                    attack.Character.KillCount++;
+                    attack.Opponent.IsAlive = false;
+                }
             }            
         }
 
-        private static void AttackCleanUp(Attack attack)
+        private static void AttackCleanUp(Action action)
         {
-            attack.Character.CummulativeInitiative += attack.Character.Initiative;
-            attack.Character.Weapon.RemainingAttacks--;
+            action.Character.CummulativeInitiative += action.Character.Initiative;
+            action.Character.Weapon.RemainingAttacks--;
+
+            action.Opponent_EOTValues = new Character(action.Opponent.RemainingHitPoints, action.Opponent.IsAlive);
         }
 
         private void CheckForHit(int attackerDex, int defenderDex)
@@ -168,5 +193,6 @@ namespace SWG_sim
                 IsCritical = true;
             }
         }
+        #endregion
     }
 }

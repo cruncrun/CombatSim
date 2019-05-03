@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    class Weapon
+    public class Weapon
     {
         public int BaseAttackPower { get; set; }
         public int AttackPowerDiceSides { get; set; }

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    class Character
+    public class Character
     {
+        #region Properties
         private int remainingHitPoints;
         private int remainingManaPoints;
-        private string v;
-
+        private int defencePoints;  
+        
         public string Name { get; set; }
         public int HitPoints { get; set; }
         public int RemainingHitPoints
@@ -51,7 +52,24 @@ namespace SWG_sim
                 }
             }
         }
-        public int DefencePoints { get; set; }
+        public int DefencePoints
+        {
+            get
+            {
+                return defencePoints;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    defencePoints = 0;
+                }
+                else
+                {
+                    defencePoints = value;
+                }
+            }
+        }
         public int Strength { get; set; }
         public int Dexterity { get; set; }
         //public int Intelligence { get; set; }
@@ -66,15 +84,16 @@ namespace SWG_sim
         public int DamageDone { get; set; }
         public int DamageTaken { get; set; }
         public int KillCount { get; set; }
-        
+        #endregion
 
+        #region Constructors
         public Character(string name, bool isAttacker)
         {
             Utils utils = new Utils();
             Weapon = new Weapon();
             Armor = new Armor();
             Name = name;
-            HitPoints = 200 + utils.RandomNumber(101);            
+            HitPoints = 45 + utils.RandomNumber(21);            
             RemainingHitPoints = HitPoints;
             ManaPoints = 20;
             RemainingManaPoints = ManaPoints;            
@@ -89,10 +108,13 @@ namespace SWG_sim
             IsAttacker = isAttacker;
         }
 
+        // Boss Constructor
         public Character(string name, int hitPoints, int manaPoints, 
-            int strength, int dexterity, int toughness, int initiative, Weapon weapon,
+            int strength, int dexterity, int toughness, int initiative, Weapon weapon, Armor armor,
             bool isAlive, bool isAttacker)
         {
+            Weapon = weapon;
+            Armor = armor;
             Name = name;
             HitPoints = hitPoints;
             RemainingHitPoints = HitPoints;
@@ -100,17 +122,23 @@ namespace SWG_sim
             Strength = strength;
             Dexterity = dexterity;
             Toughness = toughness;
-            DefencePoints = Toughness;
+            DefencePoints = (Toughness + Armor.DefencePoints) / 2;
             Initiative = initiative;
-            CummulativeInitiative = Initiative;
-            Weapon = weapon;
+            CummulativeInitiative = Initiative;            
             IsAlive = isAlive;
             IsAttacker = isAttacker;
         }
 
-        public Character(string v)
+        public Character(string name)
         {
-            this.v = v;
+            Name = name;
         }
+
+        public Character(int remainigHitPoints, bool isAlive) // End of turn values storage
+        {
+            RemainingHitPoints = remainigHitPoints;
+            IsAlive = isAlive;
+        }
+        #endregion
     }
 }
