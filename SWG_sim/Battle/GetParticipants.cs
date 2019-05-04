@@ -27,6 +27,7 @@ namespace SWG_sim
                                                        utils.RandomNumber(4, 6),                             // AttacksPerTurn
                                                        utils.RandomNumber(8, 15)),                           // CriticalChance
                                             new Armor(),
+                                            -1,
                                             true,                  // isAlive
                                             false);                // isAttacker
                     return boss;
@@ -45,6 +46,7 @@ namespace SWG_sim
                                                      utils.RandomNumber(1, 3),                             // AttacksPerTurn
                                                      utils.RandomNumber(2, 6)),                           // CriticalChance
                                           new Armor(),
+                                          -1,
                                           true,                                     // isAlive
                                           false);                                   // isAttacker
                     return bossDamageSponge;
@@ -63,24 +65,26 @@ namespace SWG_sim
                                                        utils.RandomNumber(3, 6),                             // AttacksPerTurn
                                                        utils.RandomNumber(5, 10)),                           // CriticalChance
                                             new Armor(),
+                                            -1,
                                             true,                                     // isAlive
                                             false);                                   // isAttacker
                     return bossLesser;
 
                 default:
-                    Character bossRandom = new Character("Esencja zniszczenia i śmierci",                     // Name
-                                            utils.RandomNumber(15, 2250),           // HitPoints
+                    Character bossRandom = new Character("Lekarz rezydent",                     // Name
+                                            utils.RandomNumber(225, 300),           // HitPoints
                                             1,                                       // ManaPoints                                            
-                                            utils.RandomNumber(1, 50),                                       // Strength
-                                            utils.RandomNumber(1, 50),                                       // Dexterity
-                                            utils.RandomNumber(1, 50),                                     // Toughness
-                                            utils.RandomNumber(1, 50),                                        // Initiative
-                                            new Weapon(utils.RandomNumber(1, 50),                           // BaseAttackPower
-                                                       utils.RandomNumber(1, 50),                           // DiceSides
-                                                       utils.RandomNumber(1, 50),                           // DiceRolls
-                                                       utils.RandomNumber(1, 50),                            // AttacksPerTurn
-                                                       utils.RandomNumber(1, 50)),                            // CriticalChance
+                                            utils.RandomNumber(5, 10),                                       // Strength
+                                            utils.RandomNumber(15, 20),                                       // Dexterity
+                                            utils.RandomNumber(5, 10),                                     // Toughness
+                                            utils.RandomNumber(10, 15),                                        // Initiative
+                                            new Weapon(utils.RandomNumber(12, 20),                           // BaseAttackPower
+                                                       utils.RandomNumber(2, 3),                           // DiceSides
+                                                       utils.RandomNumber(4, 10),                           // DiceRolls
+                                                       utils.RandomNumber(2, 5),                            // AttacksPerTurn
+                                                       utils.RandomNumber(10, 20)),                            // CriticalChance
                                             new Armor(),
+                                            100,
                                             true,                                     // isAlive
                                             false);                                   // isAttacker
                     return bossRandom;
@@ -95,7 +99,8 @@ namespace SWG_sim
                     return new Character("Atakujący " + i, true);
                 case false:
                     return new Character("Obrońca " + i, false);
-                default:                    
+                default:
+                                        
             }
             
         }

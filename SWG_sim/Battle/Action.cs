@@ -16,9 +16,10 @@ namespace SWG_sim
 
         public ActionType ActionTypeId { get; set; }
         public Character Character { get; set; }
-        public Character Opponent { get; set; }
-        public Character Opponent_EOTValues { get; set; }
+        public Character Target { get; set; }
+        public Character Target_EOTValues { get; set; }
         public List<Character> AliveParticipants { get; set; }
+        public bool CleanupDone { get; set; }
         public int DamageAmount
         {
             get
@@ -64,6 +65,7 @@ namespace SWG_sim
         {
             Character = character;
             AliveParticipants = aliveParticipants;
+            CleanupDone = false;
         }
         #endregion
 
@@ -78,53 +80,126 @@ namespace SWG_sim
         #endregion
 
         #region Public members
-        public void PerformAttack(Action action)
+        public void PerformAction(Action action)
         {
-            action.Opponent = SelectTarget(action);
-            //Opponent = (Character)SelectTarget(action).Clone(); // prowizorka            
-
-            if (action.Opponent != null && action.Opponent.Name != "Nie ma")
+            switch (action.ActionTypeId)
             {
-                CheckForHit(action.Character.Dexterity, action.Opponent.Dexterity);
-                if (IsAccurate)
-                {
-                    CheckForCritialHit(action.Character.Weapon.CriticalChance);
-                    CalculateAttack(action);
-                }
-                else
-                {
-                    //ConsoleWriter.MissedAttackMessage(attack);
-                }
-                AttackCleanUp(action);
-            }  
-        }        
+                case ActionType.SingleTargetAttack:
+                    action.Target = SelectEnemyTarget(action);
 
-        public Character SelectTarget(Action attack)
+                    if (action.Target != null && action.Target.Name != "Nie ma")
+                    {
+                        CheckForHit(action.Character.Dexterity, action.Target.Dexterity);
+                        if (IsAccurate)
+                        {
+                            CheckForCritialHit(action.Character.Weapon.CriticalChance);
+                            CalculateAttack(action);
+                        }
+                    }
+                    break;
+
+                case ActionType.SingleTargetHealing:
+                    action.Target = SelectAlliedTarget(action);
+
+                    if (action.Target != null && action.Target.Name != "Nie ma")
+                    {
+                        CheckForCritialHit(action.Character.Weapon.CriticalChance);
+                        CalculateHealing(action);                        
+                    }
+                    break;
+
+                case ActionType.MultiTargetAttack:
+                    break;
+
+                case ActionType.MultiTargetHealing:
+                    break;
+
+                default:
+                    break;
+            }
+            AttackCleanUp(action);
+
+        }
+
+        
+        
+
+        public Character SelectEnemyTarget(Action attack)
         {
             Utils utils = new Utils();
-            List<Character> opponentsList = GetOppisteSide(attack.Character.IsAttacker, attack.AliveParticipants);
+            List<Character> opponentsList = GetListOfTargets(attack.Character.IsAttacker, attack.AliveParticipants);
             if (opponentsList.Any())
             {
                 Character opponent = opponentsList[utils.RandomNumber(opponentsList.Count)];
                 return opponent;
-            }            
+            }
             return new Character("Nie ma");
+        }
+
+        public Character SelectAlliedTarget(Action healing)
+        {
+            Utils utils = new Utils();
+            List<Character> opponentsList = GetListOfTargets(!healing.Character.IsAttacker, healing.AliveParticipants);
+            if (opponentsList.Any())
+            {
+                Character opponent = opponentsList[utils.RandomNumber(opponentsList.Count)];
+                return opponent;
+            }
+            return new Character("Nie ma");
+        }
+
+        public ActionType GetActionTypeId(Character character)
+        {
+            Utils utils = new Utils();
+            if (utils.RandomNumber(101) <= character.HealingChance)
+            {
+                return ActionType.SingleTargetHealing;
+            }
+            else
+            {
+                return ActionType.SingleTargetAttack;
+            }
         }
         #endregion
 
         #region Private members
         private void CalculateDamageDone(Action attack)
-        {            
+        {
             attack.DamageAmount = (attack.Character.Strength / 2) + GetWeaponDamage(attack.Character.Weapon);
-            
+            /*
+            TODO: Zdecydować, czy zwiększenie zadawanych obrażeń związanych z trafieniem krytycznym jest rozpatrywane
+            przed czy po uwzględnieniu pancerza.
+            */
+            attack.DamageAmount -= attack.Target.DefencePoints;
             if (attack.IsCritical)
             {
                 attack.DamageAmount *= 2;
             }
-            attack.DamageAmount -= attack.Opponent.DefencePoints;
+            
             attack.Character.DamageDone += attack.DamageAmount;
-            attack.Opponent.RemainingHitPoints -= attack.DamageAmount;
-            attack.Opponent.DamageTaken += attack.DamageAmount;
+            attack.Target.RemainingHitPoints -= attack.DamageAmount;
+            attack.Target.DamageTaken += attack.DamageAmount;
+        }
+
+        private void CalculateHealing(Action healing)
+        {
+            if (healing.Character.IsAlive && healing.Target.IsAlive && Target.RemainingHitPoints < Target.HitPoints)
+            {
+                healing.HealingAmount = GetWeaponDamage(healing.Character.Weapon);
+
+                if (healing.IsCritical)
+                {
+                    healing.HealingAmount *= 2;
+                }
+                healing.Character.HealingDone += healing.HealingAmount;
+                healing.Target.RemainingHitPoints += healing.HealingAmount;
+                healing.Target.HealingTaken += healing.HealingAmount;
+            }
+            else
+            {
+                healing.ActionTypeId = ActionType.SingleTargetAttack;
+                PerformAction(healing);
+            }
         }
 
         private int GetWeaponDamage(Weapon weapon)
@@ -138,40 +213,44 @@ namespace SWG_sim
             return damage;
         }
 
-        private List<Character> GetOppisteSide(bool isAttacking, List<Character> participants)
+        private List<Character> GetListOfTargets(bool isAttacking, List<Character> participants)
         {
-            List<Character> aliveOpponents = new List<Character>();
+            List<Character> aliveTargets = new List<Character>();
 
             foreach (var character in participants)
             {
                 if (character.IsAlive && character.IsAttacker != isAttacking)
                 {
-                    aliveOpponents.Add(character);
+                    aliveTargets.Add(character);
                 }
             }
-            return aliveOpponents;
+            return aliveTargets;
         }
 
         private void CalculateAttack(Action attack)
         {
-            if (attack.Character.IsAlive && attack.Opponent.IsAlive)
+            if (attack.Character.IsAlive && attack.Target.IsAlive)
             {
                 CalculateDamageDone(attack);
-                if (attack.Opponent.RemainingHitPoints <= 0)
+                if (attack.Target.RemainingHitPoints <= 0)
                 {
                     //ConsoleWriter.DeathMessage(attack.Opponent.Name);                
                     attack.Character.KillCount++;
-                    attack.Opponent.IsAlive = false;
+                    attack.Target.IsAlive = false;
                 }
-            }            
+            }
         }
 
         private static void AttackCleanUp(Action action)
         {
-            action.Character.CummulativeInitiative += action.Character.Initiative;
-            action.Character.Weapon.RemainingAttacks--;
-
-            action.Opponent_EOTValues = new Character(action.Opponent.RemainingHitPoints, action.Opponent.IsAlive);
+            if (!action.CleanupDone)
+            {
+                action.Character.CummulativeInitiative += action.Character.Initiative;
+                action.Character.Weapon.RemainingAttacks--;
+                action.Target_EOTValues = new Character(action.Target.RemainingHitPoints, action.Target.IsAlive);
+                action.CleanupDone = true;
+            }
+            
         }
 
         private void CheckForHit(int attackerDex, int defenderDex)
@@ -193,6 +272,7 @@ namespace SWG_sim
                 IsCritical = true;
             }
         }
+
         #endregion
     }
 }

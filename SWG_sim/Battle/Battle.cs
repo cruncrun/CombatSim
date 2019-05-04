@@ -37,7 +37,7 @@ namespace SWG_sim
         #region Private members
         private void BattleReport()
         {
-            for (int turnIterator = 1; turnIterator <= 10 && AreThereAnyParticipantsLeft(Participants); turnIterator++)
+            for (int turnIterator = 1; turnIterator <= 12 && AreThereAnyParticipantsLeft(Participants); turnIterator++)
             {
                 List<Character> aliveParticipants = GetAliveParticipants(Participants);
 
@@ -48,25 +48,26 @@ namespace SWG_sim
                     List<Character> attackingParticipants = InitiativeCheck(aliveParticipants, i);
                     if (attackingParticipants.Count != 0)
                     {
-                        foreach (var character in attackingParticipants)
-                        {
-                            if (character.IsAlive)
-                            {
-                                Action action = new Action(character, aliveParticipants);
-                                action.PerformAttack(action);
-                                turn.ActionList.Add(action);
-                                //Thread.Sleep(300);
-                            }                             
-                        }
-                    }
-                    else
-                    {
-                        
+                        PerformAllActions(aliveParticipants, turn, attackingParticipants);
                     }
                 }  
                 Turns.Add(turn);
                 TurnReset(Participants);                
             }            
+        }
+
+        private static void PerformAllActions(List<Character> aliveParticipants, Turn turn, List<Character> attackingParticipants)
+        {
+            foreach (var character in attackingParticipants)
+            {
+                if (character.IsAlive)
+                {
+                    Action action = new Action(character, aliveParticipants);
+                    action.ActionTypeId = action.GetActionTypeId(character);
+                    action.PerformAction(action);
+                    turn.ActionList.Add(action);
+                }
+            }
         }
 
         private List<Character> GetAliveParticipants(List<Character> participants)
@@ -144,8 +145,8 @@ namespace SWG_sim
 
         private void Prepare() // metoda tymczasowo stosowana do debuga
         {   
-            int numberOfAttackers = 5;
-            int numberOfDefenders = 5;
+            int numberOfAttackers = 20;
+            int numberOfDefenders = 10;
 
             for (int i = 0; i < numberOfAttackers; i++)
             {
@@ -153,19 +154,19 @@ namespace SWG_sim
             }
 
             
-            for (int i = 0; i < numberOfDefenders; i++)
-            {
-                Participants.Add(BossGenerator.GenerateCharacter(false, i));
-            }
+            //for (int i = 0; i < numberOfDefenders; i++)
+            //{
+            //    Participants.Add(BossGenerator.GenerateCharacter(false, i));
+            //}
             
-            /*
-            // BOSS                        
-            Participants.Add(BossGenerator.GenerateBoss(1));
-            Participants.Add(BossGenerator.GenerateBoss(1));
+            
+            // BOSS                       
             Participants.Add(BossGenerator.GenerateBoss(1));
             Participants.Add(BossGenerator.GenerateBoss(2));
             Participants.Add(BossGenerator.GenerateBoss(2));
-            */
+            Participants.Add(BossGenerator.GenerateBoss(4));
+            Participants.Add(BossGenerator.GenerateBoss(4));
+
         }
         #endregion
     }

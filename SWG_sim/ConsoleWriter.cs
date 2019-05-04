@@ -28,26 +28,59 @@ namespace SWG_sim
         {
             foreach (Action action in actionList)
             {
-                if (action.IsAccurate)
+                switch (action.ActionTypeId)
                 {
-                    if (action.IsCritical)
-                    {
-                        CriticalHitMessage(action);
-                    }
-                    else
-                    {
-                        RegularHitMesage(action);
-                    }
-                    if (!action.Opponent_EOTValues.IsAlive)
-                    {
-                        DeathMessage(action.Opponent.Name);
-                    }
-                }
-                else
-                {
-                    MissedAttackMessage(action);
+                    case Action.ActionType.SingleTargetAttack:
+                        if (action.IsAccurate)
+                        {
+                            if (action.IsCritical)
+                            {
+                                CriticalHitMessage(action);
+                            }
+                            else
+                            {
+                                RegularHitMesage(action);
+                            }
+                            if (!action.Target_EOTValues.IsAlive)
+                            {
+                                DeathMessage(action.Target.Name);
+                            }
+                        }
+                        else
+                        {
+                            MissedAttackMessage(action);
+                        }
+                        break;
+                    case Action.ActionType.MultiTargetAttack:
+                        break;
+                    case Action.ActionType.SingleTargetHealing:
+                        RegularHealingMessage(action);
+                        break;
+                    case Action.ActionType.MultiTargetHealing:
+                        break;
+                    default:
+                        break;
                 }
             }
+        }
+
+        private void RegularHealingMessage(Action action)
+        {
+            string baseText = "{0} leczy leśną magią {1} punktów obrażeń. {2} ma {3}/{4} punktów życia.";
+            Formatter[] elements = new Formatter[]
+            {
+                new Formatter(action.Character.Name, GetCharacterNameColor(action.Character)),
+                new Formatter(action.HealingAmount, Color.Green),
+                new Formatter(action.Target.Name, GetCharacterNameColor(action.Target)),
+                new Formatter(action.Target_EOTValues.RemainingHitPoints, Color.White),
+                new Formatter(action.Target.HitPoints, Color.White)
+            };
+            Console.WriteLineFormatted(baseText, Color.LightGreen, elements);
+        }
+
+        private void CriticalHealingMessage(Action action)
+        {
+            throw new NotImplementedException();
         }
 
         private void PrintParticipantDetails(List<Character> participants)
@@ -81,19 +114,19 @@ namespace SWG_sim
                 new Formatter(character.Strength, Color.White),
                 new Formatter(character.Dexterity, Color.White),
                 new Formatter(character.Toughness, Color.White),
-                new Formatter(character.DefencePoints, Color.White)                
+                new Formatter(character.DefencePoints, Color.White)
             };
             Console.WriteLineFormatted(baseTextFirstLine, Color.LightGray, elementsFirstLine);
             // Line 2
             string baseTextSecondLine = "Broń:\t{0}-{1} * {2}\tPancerz\tDEF: {3}\tI: {4}";
             Formatter[] elementsSecondLine = new Formatter[]
-            {                
+            {
                 new Formatter(character.Weapon.MinimumDamage, Color.White),
                 new Formatter(character.Weapon.MaximumDamage, Color.White),
                 new Formatter(character.Weapon.AttacksPerTurn, Color.White),
                 new Formatter(character.Armor.DefencePoints, Color.White),
                 new Formatter(character.Armor.InitiativeModifier, Color.White)
-            };            
+            };
             Console.WriteLineFormatted(baseTextSecondLine, Color.LightGray, elementsSecondLine);
         }
 
@@ -104,11 +137,11 @@ namespace SWG_sim
             {
                 new Formatter(action.Character.Name, GetCharacterNameColor(action.Character)),
                 new Formatter(action.DamageAmount, Color.White),
-                new Formatter(action.Opponent.Name, GetCharacterNameColor(action.Opponent)),
-                new Formatter(action.Opponent_EOTValues.RemainingHitPoints, Color.White),
-                new Formatter(action.Opponent.HitPoints, Color.White)
+                new Formatter(action.Target.Name, GetCharacterNameColor(action.Target)),
+                new Formatter(action.Target_EOTValues.RemainingHitPoints, Color.White),
+                new Formatter(action.Target.HitPoints, Color.White)
             };
-            Console.WriteLineFormatted(baseText, Color.LightGray, elements);            
+            Console.WriteLineFormatted(baseText, Color.LightGray, elements);
         }
 
         private void CriticalHitMessage(Action action)
@@ -118,9 +151,9 @@ namespace SWG_sim
             {
                 new Formatter(action.Character.Name, GetCharacterNameColor(action.Character)),
                 new Formatter(action.DamageAmount, Color.DeepPink),
-                new Formatter(action.Opponent.Name, GetCharacterNameColor(action.Opponent)),
-                new Formatter(action.Opponent_EOTValues.RemainingHitPoints, Color.White),
-                new Formatter(action.Opponent.HitPoints, Color.White)
+                new Formatter(action.Target.Name, GetCharacterNameColor(action.Target)),
+                new Formatter(action.Target_EOTValues.RemainingHitPoints, Color.White),
+                new Formatter(action.Target.HitPoints, Color.White)
             };
             Console.WriteLineFormatted(baseText, Color.HotPink, elements);
         }
@@ -131,16 +164,16 @@ namespace SWG_sim
             Formatter[] elements = new Formatter[]
             {
                 new Formatter(action.Character.Name, GetCharacterNameColor(action.Character)),
-                new Formatter(action.Opponent.Name, GetCharacterNameColor(action.Opponent))
+                new Formatter(action.Target.Name, GetCharacterNameColor(action.Target))
             };
-            Console.WriteLineFormatted(baseText, Color.DimGray, elements);            
+            Console.WriteLineFormatted(baseText, Color.DimGray, elements);
         }
 
         private void PrintBattleSummary(List<Character> participants)
         {
             foreach (var character in participants)
             {
-                string baseText = "{0} \t{1}/{2}\tZabitych wrogów: {3}. \tZadane obrażenia: {4}, otrzymane obrażenia: {5}";
+                string baseText = "{0} \t{1}/{2}\tZabitych wrogów: {3}. \tDD: {4}, DT: {5}, HD: {6}, HT: {7}";
                 Formatter[] elements = new Formatter[]
                 {
                     new Formatter(character.Name, GetCharacterNameColor(character)),
@@ -148,7 +181,9 @@ namespace SWG_sim
                     new Formatter(character.HitPoints, Color.LightGray),
                     new Formatter(character.KillCount, Color.LightGray),
                     new Formatter(character.DamageDone, Color.LightGray),
-                    new Formatter(character.DamageTaken, Color.LightGray)
+                    new Formatter(character.DamageTaken, Color.LightGray),
+                    new Formatter(character.HealingDone, Color.LightGray),
+                    new Formatter(character.HealingTaken, Color.LightGray)
                 };
                 Console.WriteLineFormatted(baseText, Color.LightGray, elements);
             }

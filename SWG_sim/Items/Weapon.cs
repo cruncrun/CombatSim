@@ -25,7 +25,7 @@ namespace SWG_sim
             AttackPowerDiceSides = utils.RandomNumber(2, 4);
             AttackPowerDiceRolls = utils.RandomNumber(6, 10);
             InitiativeModifier = utils.RandomNumber(0, 11) - 5;
-            AttacksPerTurn = utils.RandomNumber(1, 5);
+            AttacksPerTurn = utils.RandomNumber(1, 4);
             //AttacksPerTurn = 1;
             RemainingAttacks = AttacksPerTurn;
             CriticalChance = utils.RandomNumber(4) + utils.RandomNumber(4) + 5;

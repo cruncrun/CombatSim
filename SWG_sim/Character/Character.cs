@@ -23,14 +23,7 @@ namespace SWG_sim
             }
             set
             {
-                if (value <= 0)
-                {
-                    remainingHitPoints = 0;
-                }
-                else
-                {
-                    remainingHitPoints = value;
-                }
+                remainingHitPoints = value <= 0 ? 0 : value;
             }
         }
         public int ManaPoints { get; set; }
@@ -42,14 +35,7 @@ namespace SWG_sim
             }
             set
             {
-                if (value <= 0)
-                {
-                    remainingManaPoints = 0;
-                }
-                else
-                {
-                    remainingManaPoints = value;
-                }
+                remainingManaPoints = value <= 0 ? 0 : value;
             }
         }
         public int DefencePoints
@@ -60,14 +46,7 @@ namespace SWG_sim
             }
             set
             {
-                if (value <= 0)
-                {
-                    defencePoints = 0;
-                }
-                else
-                {
-                    defencePoints = value;
-                }
+                defencePoints = value <= 0 ? 0 : value;
             }
         }
         public int Strength { get; set; }
@@ -84,6 +63,9 @@ namespace SWG_sim
         public int DamageDone { get; set; }
         public int DamageTaken { get; set; }
         public int KillCount { get; set; }
+        public int HealingDone { get; set; }
+        public int HealingTaken { get; set; }
+        public int HealingChance { get; set; }
         #endregion
 
         #region Constructors
@@ -93,7 +75,7 @@ namespace SWG_sim
             Weapon = new Weapon();
             Armor = new Armor();
             Name = name;
-            HitPoints = 45 + utils.RandomNumber(21);            
+            HitPoints = 100 + utils.RandomNumber(51);            
             RemainingHitPoints = HitPoints;
             ManaPoints = 20;
             RemainingManaPoints = ManaPoints;            
@@ -104,6 +86,7 @@ namespace SWG_sim
             DefencePoints = (Toughness + Armor.DefencePoints) / 2;
             //Initiative = 1 + utils.RandomNumber(3);
             CummulativeInitiative = Initiative;
+            HealingChance = utils.RandomNumber(0, 101);
             IsAlive = true;
             IsAttacker = isAttacker;
         }
@@ -111,7 +94,7 @@ namespace SWG_sim
         // Boss Constructor
         public Character(string name, int hitPoints, int manaPoints, 
             int strength, int dexterity, int toughness, int initiative, Weapon weapon, Armor armor,
-            bool isAlive, bool isAttacker)
+            int healingChance, bool isAlive, bool isAttacker)
         {
             Weapon = weapon;
             Armor = armor;
@@ -124,7 +107,8 @@ namespace SWG_sim
             Toughness = toughness;
             DefencePoints = (Toughness + Armor.DefencePoints) / 2;
             Initiative = initiative;
-            CummulativeInitiative = Initiative;            
+            CummulativeInitiative = Initiative;
+            HealingChance = healingChance;
             IsAlive = isAlive;
             IsAttacker = isAttacker;
         }
@@ -135,7 +119,7 @@ namespace SWG_sim
         }
 
         public Character(int remainigHitPoints, bool isAlive) // End of turn values storage
-        {
+        {            
             RemainingHitPoints = remainigHitPoints;
             IsAlive = isAlive;
         }
