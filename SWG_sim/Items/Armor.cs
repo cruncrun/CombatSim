@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    class Armor
+    public class Armor
     {
         public int DefencePoints { get; set; }
         public int InitiativeModifier { get; set; }
@@ -15,7 +15,7 @@ namespace SWG_sim
         {
             Utils utils = new Utils();
             InitiativeModifier = utils.RandomNumber(-10, 11);
-            DefencePoints = InitiativeModifier * 2;
+            DefencePoints = Convert.ToInt32(InitiativeModifier * 1.5);
         }
     }
 }

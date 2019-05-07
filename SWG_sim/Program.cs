@@ -9,9 +9,14 @@ namespace SWG_sim
     class Program
     {
         static void Main(string[] args)
-        {
-            Battle battle = new Battle();
-            battle.Fight(battle);
+        {            
+            Character character = new Character();
+            Battle battle = new Battle(character.GetCharacters(3));
+            battle.GenerateBattleReport();
+
+            ConsoleWriter cw = new ConsoleWriter();
+            cw.GenerateBattleReport(battle); 
+
             Console.ReadKey();
         }
     }

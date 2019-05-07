@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    class Character
+    public class Character
     {
+        #region Properties
         private int remainingHitPoints;
         private int remainingManaPoints;
-        private string v;
-
+        private int defencePoints;  
+        
         public string Name { get; set; }
         public int HitPoints { get; set; }
         public int RemainingHitPoints
@@ -26,6 +27,10 @@ namespace SWG_sim
                 {
                     remainingHitPoints = 0;
                 }
+                else if (value > HitPoints)
+                {
+                    remainingHitPoints = HitPoints;
+                }  
                 else
                 {
                     remainingHitPoints = value;
@@ -41,17 +46,20 @@ namespace SWG_sim
             }
             set
             {
-                if (value <= 0)
-                {
-                    remainingManaPoints = 0;
-                }
-                else
-                {
-                    remainingManaPoints = value;
-                }
+                remainingManaPoints = value <= 0 ? 0 : value;
             }
         }
-        public int DefencePoints { get; set; }
+        public int DefencePoints
+        {
+            get
+            {
+                return defencePoints;
+            }
+            set
+            {
+                defencePoints = value <= 0 ? 0 : value;
+            }
+        }
         public int Strength { get; set; }
         public int Dexterity { get; set; }
         //public int Intelligence { get; set; }
@@ -66,15 +74,19 @@ namespace SWG_sim
         public int DamageDone { get; set; }
         public int DamageTaken { get; set; }
         public int KillCount { get; set; }
-        
+        public int HealingDone { get; set; }
+        public int HealingTaken { get; set; }
+        public int HealingChance { get; set; }
+        #endregion
 
+        #region Constructors
         public Character(string name, bool isAttacker)
         {
             Utils utils = new Utils();
             Weapon = new Weapon();
             Armor = new Armor();
             Name = name;
-            HitPoints = 200 + utils.RandomNumber(101);            
+            HitPoints = 100 + utils.RandomNumber(51);            
             RemainingHitPoints = HitPoints;
             ManaPoints = 20;
             RemainingManaPoints = ManaPoints;            
@@ -85,14 +97,18 @@ namespace SWG_sim
             DefencePoints = (Toughness + Armor.DefencePoints) / 2;
             //Initiative = 1 + utils.RandomNumber(3);
             CummulativeInitiative = Initiative;
+            HealingChance = GetHealing();
             IsAlive = true;
             IsAttacker = isAttacker;
-        }
+        }      
 
+        // Boss Constructor
         public Character(string name, int hitPoints, int manaPoints, 
-            int strength, int dexterity, int toughness, int initiative, Weapon weapon,
-            bool isAlive, bool isAttacker)
+            int strength, int dexterity, int toughness, int initiative, Weapon weapon, Armor armor,
+            int healingChance, bool isAlive, bool isAttacker)
         {
+            Weapon = weapon;
+            Armor = armor;
             Name = name;
             HitPoints = hitPoints;
             RemainingHitPoints = HitPoints;
@@ -100,17 +116,72 @@ namespace SWG_sim
             Strength = strength;
             Dexterity = dexterity;
             Toughness = toughness;
-            DefencePoints = Toughness;
+            DefencePoints = (Toughness + Armor.DefencePoints) / 2;
             Initiative = initiative;
             CummulativeInitiative = Initiative;
-            Weapon = weapon;
+            HealingChance = healingChance;
             IsAlive = isAlive;
             IsAttacker = isAttacker;
         }
 
-        public Character(string v)
+        public Character(string name)
         {
-            this.v = v;
+            Name = name;
         }
+
+        public Character(int hitPoints, int remainigHitPoints, bool isAlive) // End of turn values storage
+        {
+            HitPoints = hitPoints;
+            RemainingHitPoints = remainigHitPoints;
+            IsAlive = isAlive;
+        }
+
+        public Character()
+        {
+        }
+        #endregion
+
+        #region Public members
+
+        public List<Character> GetCharacters(int amount)
+        {
+            List<Character> characters = new List<Character>();
+            for (int i = 0; i < amount; i++)
+            {
+                characters.Add(GenerateCharacter(true, i));
+            }
+            for (int i = 0; i < amount; i++)
+            {
+                characters.Add(GenerateCharacter(false, i));
+            }
+            return characters;
+        }
+
+        #endregion
+
+        #region Private members 
+        private Character GenerateCharacter(bool isAttacker, int i)
+        {
+            switch (isAttacker)
+            {
+                case true:
+                    return new Character("Atakujący " + i, true);
+                case false:
+                    return new Character("Obrońca " + i, false);
+                default:
+            }
+        }
+
+        private int GetHealing()
+        {
+            int healingAbility = 0;
+            Utils utils = new Utils();
+            if (utils.RandomNumber(101) <= 20)
+            {
+                healingAbility = 100;
+            }
+            return healingAbility;
+        }
+        #endregion
     }
 }

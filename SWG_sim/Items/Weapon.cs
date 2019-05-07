@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    class Weapon
+    public class Weapon
     {
         public int BaseAttackPower { get; set; }
         public int AttackPowerDiceSides { get; set; }
@@ -21,11 +21,11 @@ namespace SWG_sim
         public Weapon()
         {
             Utils utils = new Utils();
-            BaseAttackPower = utils.RandomNumber(4, 10);
+            BaseAttackPower = utils.RandomNumber(6, 10);
             AttackPowerDiceSides = utils.RandomNumber(2, 4);
             AttackPowerDiceRolls = utils.RandomNumber(6, 10);
             InitiativeModifier = utils.RandomNumber(0, 11) - 5;
-            AttacksPerTurn = utils.RandomNumber(1, 5);
+            AttacksPerTurn = utils.RandomNumber(1, 4);
             //AttacksPerTurn = 1;
             RemainingAttacks = AttacksPerTurn;
             CriticalChance = utils.RandomNumber(4) + utils.RandomNumber(4) + 5;
