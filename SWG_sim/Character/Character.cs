@@ -23,7 +23,18 @@ namespace SWG_sim
             }
             set
             {
-                remainingHitPoints = value <= 0 ? 0 : value;
+                if (value <= 0)
+                {
+                    remainingHitPoints = 0;
+                }
+                else if (value > HitPoints)
+                {
+                    remainingHitPoints = HitPoints;
+                }  
+                else
+                {
+                    remainingHitPoints = value;
+                }
             }
         }
         public int ManaPoints { get; set; }
@@ -86,10 +97,10 @@ namespace SWG_sim
             DefencePoints = (Toughness + Armor.DefencePoints) / 2;
             //Initiative = 1 + utils.RandomNumber(3);
             CummulativeInitiative = Initiative;
-            HealingChance = utils.RandomNumber(0, 101);
+            HealingChance = GetHealing();
             IsAlive = true;
             IsAttacker = isAttacker;
-        }
+        }      
 
         // Boss Constructor
         public Character(string name, int hitPoints, int manaPoints, 
@@ -118,10 +129,58 @@ namespace SWG_sim
             Name = name;
         }
 
-        public Character(int remainigHitPoints, bool isAlive) // End of turn values storage
-        {            
+        public Character(int hitPoints, int remainigHitPoints, bool isAlive) // End of turn values storage
+        {
+            HitPoints = hitPoints;
             RemainingHitPoints = remainigHitPoints;
             IsAlive = isAlive;
+        }
+
+        public Character()
+        {
+        }
+        #endregion
+
+        #region Public members
+
+        public List<Character> GetCharacters(int amount)
+        {
+            List<Character> characters = new List<Character>();
+            for (int i = 0; i < amount; i++)
+            {
+                characters.Add(GenerateCharacter(true, i));
+            }
+            for (int i = 0; i < amount; i++)
+            {
+                characters.Add(GenerateCharacter(false, i));
+            }
+            return characters;
+        }
+
+        #endregion
+
+        #region Private members 
+        private Character GenerateCharacter(bool isAttacker, int i)
+        {
+            switch (isAttacker)
+            {
+                case true:
+                    return new Character("Atakujący " + i, true);
+                case false:
+                    return new Character("Obrońca " + i, false);
+                default:
+            }
+        }
+
+        private int GetHealing()
+        {
+            int healingAbility = 0;
+            Utils utils = new Utils();
+            if (utils.RandomNumber(101) <= 20)
+            {
+                healingAbility = 100;
+            }
+            return healingAbility;
         }
         #endregion
     }

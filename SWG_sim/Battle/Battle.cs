@@ -14,6 +14,16 @@ namespace SWG_sim
         #region Properties
         public List<Character> Participants { get; } = new List<Character>();
         public List<Turn> Turns { get; } = new List<Turn>();
+        public BattleOutcome BattleResult { get; set; }
+        #endregion
+
+        #region Enum
+        public enum BattleOutcome
+	    {
+            Draw,
+            AttackersWin,
+            DefendersWin
+	    }
         #endregion
 
         #region Constructors
@@ -21,16 +31,17 @@ namespace SWG_sim
         {
 
         }
+
+        public Battle(List<Character> participants)
+        {
+            Participants = participants;
+        }
         #endregion
 
         #region Public members
-        public void Fight(Battle battle)
-        {
-            Prepare();
+        public void GenerateBattleReport()
+        {            
             BattleReport();
-
-            ConsoleWriter cw = new ConsoleWriter();
-            cw.GenerateBattleReport(battle);            
         }
         #endregion
 
@@ -53,7 +64,17 @@ namespace SWG_sim
                 }  
                 Turns.Add(turn);
                 TurnReset(Participants);                
-            }            
+            }
+            BattleResultCheck(GetAliveParticipants(Participants));
+        }
+
+        private void BattleResultCheck(List<Character> participants)
+        {
+            if (!AreThereAnyDefendersLeft(participants))
+                BattleResult = BattleOutcome.AttackersWin;
+            else if (!AreThereAnyAttackersLeft(participants))
+                BattleResult = BattleOutcome.DefendersWin;
+            else BattleResult = BattleOutcome.Draw;
         }
 
         private static void PerformAllActions(List<Character> aliveParticipants, Turn turn, List<Character> attackingParticipants)
@@ -107,9 +128,15 @@ namespace SWG_sim
 
         private bool AreThereAnyParticipantsLeft(List<Character> participants)
         {
+            bool areThereAnyAttackersLeft = AreThereAnyAttackersLeft(participants);
+            bool areThereAnyDefendersLeft = AreThereAnyDefendersLeft(participants);            
+
+            return areThereAnyAttackersLeft && areThereAnyDefendersLeft ? true : false;
+        }
+
+        private bool AreThereAnyAttackersLeft(List<Character> participants)
+        {
             bool areThereAnyAttackersLeft = false;
-            bool areThereAnyDefendersLeft = false;
-            
             foreach (var character in participants)
             {
                 if (character.IsAlive)
@@ -118,14 +145,35 @@ namespace SWG_sim
                     {
                         areThereAnyAttackersLeft = true;
                     }
+                }
+            }
+            return areThereAnyAttackersLeft;
+        }
+
+        private bool AreThereAnyDefendersLeft(List<Character> participants)
+        {
+            bool areThereAnyDefendersLeft = false;
+            foreach (var character in participants)
+            {
+                if (character.IsAlive)
+                {
                     if (!character.IsAttacker)
                     {
                         areThereAnyDefendersLeft = true;
                     }
                 }
             }
+            return areThereAnyDefendersLeft;
+        }
 
-            return areThereAnyAttackersLeft && areThereAnyDefendersLeft ? true : false;
+        private bool IsCharacterAttacking(Character participant)
+        {
+            return (participant.IsAttacker) ? true : false;
+        }
+
+        private bool IsCharacterDefending(Character participant)
+        {
+            return (!participant.IsAttacker) ? true : false;
         }
 
         private List<Character> InitiativeCheck(List<Character> participants, int initiative)
@@ -143,31 +191,6 @@ namespace SWG_sim
             return attackingParticipants;
         }
 
-        private void Prepare() // metoda tymczasowo stosowana do debuga
-        {   
-            int numberOfAttackers = 20;
-            int numberOfDefenders = 10;
-
-            for (int i = 0; i < numberOfAttackers; i++)
-            {
-                Participants.Add(BossGenerator.GenerateCharacter(true, i));
-            }
-
-            
-            //for (int i = 0; i < numberOfDefenders; i++)
-            //{
-            //    Participants.Add(BossGenerator.GenerateCharacter(false, i));
-            //}
-            
-            
-            // BOSS                       
-            Participants.Add(BossGenerator.GenerateBoss(1));
-            Participants.Add(BossGenerator.GenerateBoss(2));
-            Participants.Add(BossGenerator.GenerateBoss(2));
-            Participants.Add(BossGenerator.GenerateBoss(4));
-            Participants.Add(BossGenerator.GenerateBoss(4));
-
-        }
         #endregion
     }
 }

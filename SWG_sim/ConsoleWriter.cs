@@ -12,7 +12,27 @@ namespace SWG_sim
         {
             PrintParticipantDetails(battle.Participants);
             PrintTurnDetails(battle.Turns);
-            PrintBattleSummary(battle.Participants);
+            PrintBattleResult(battle.BattleResult);
+            PrintBattleSummary(battle.Participants);            
+        }
+
+        private void PrintBattleResult(Battle.BattleOutcome battleResult)
+        {
+            switch (battleResult)
+            {
+                case Battle.BattleOutcome.Draw:
+                    System.Console.WriteLine("Walka zakończyła się remisem.", Color.Beige);
+                    break;
+                case Battle.BattleOutcome.AttackersWin:
+                    System.Console.WriteLine("Walka zakończyła się zwycięstwem napastników.", Color.Beige);
+                    break;
+                case Battle.BattleOutcome.DefendersWin:
+                    System.Console.WriteLine("Walka zakończyła się skuteczną obroną.", Color.Beige);
+                    break;
+                default:
+                    break;
+            }
+            System.Console.WriteLine("\r\n");
         }
 
         private void PrintTurnDetails(List<Turn> turns)
@@ -21,6 +41,7 @@ namespace SWG_sim
             {
                 TurnNumberMessage(turn.TurnIterator);
                 TurnActionsMessage(turn.ActionList);
+                System.Console.WriteLine("\r\n");
             }
         }
 
@@ -173,7 +194,7 @@ namespace SWG_sim
         {
             foreach (var character in participants)
             {
-                string baseText = "{0} \t{1}/{2}\tZabitych wrogów: {3}. \tDD: {4}, DT: {5}, HD: {6}, HT: {7}";
+                string baseText = "{0} \t{1}/{2}\tZabitych wrogów: {3}. DD: {4}, DT: {5}, HD: {6}, HT: {7}";
                 Formatter[] elements = new Formatter[]
                 {
                     new Formatter(character.Name, GetCharacterNameColor(character)),

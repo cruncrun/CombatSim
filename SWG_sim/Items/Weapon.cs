@@ -21,7 +21,7 @@ namespace SWG_sim
         public Weapon()
         {
             Utils utils = new Utils();
-            BaseAttackPower = utils.RandomNumber(4, 10);
+            BaseAttackPower = utils.RandomNumber(6, 10);
             AttackPowerDiceSides = utils.RandomNumber(2, 4);
             AttackPowerDiceRolls = utils.RandomNumber(6, 10);
             InitiativeModifier = utils.RandomNumber(0, 11) - 5;

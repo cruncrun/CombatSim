@@ -28,14 +28,7 @@ namespace SWG_sim
             }
             set
             {
-                if (value <= 0)
-                {
-                    damageAmount = 1;
-                }
-                else
-                {
-                    damageAmount = value;
-                }
+                damageAmount = value <= 0 ? 1 : value;                
             }
         }
         public int HealingAmount
@@ -121,9 +114,6 @@ namespace SWG_sim
 
         }
 
-        
-        
-
         public Character SelectEnemyTarget(Action attack)
         {
             Utils utils = new Utils();
@@ -183,7 +173,9 @@ namespace SWG_sim
 
         private void CalculateHealing(Action healing)
         {
-            if (healing.Character.IsAlive && healing.Target.IsAlive && Target.RemainingHitPoints < Target.HitPoints)
+            if (healing.Character.IsAlive
+                && healing.Target.IsAlive
+                && healing.Target.RemainingHitPoints < healing.Target.HitPoints)
             {
                 healing.HealingAmount = GetWeaponDamage(healing.Character.Weapon);
 
@@ -247,7 +239,7 @@ namespace SWG_sim
             {
                 action.Character.CummulativeInitiative += action.Character.Initiative;
                 action.Character.Weapon.RemainingAttacks--;
-                action.Target_EOTValues = new Character(action.Target.RemainingHitPoints, action.Target.IsAlive);
+                action.Target_EOTValues = new Character(action.Target.HitPoints, action.Target.RemainingHitPoints, action.Target.IsAlive);
                 action.CleanupDone = true;
             }
             

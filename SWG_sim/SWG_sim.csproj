@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="Battle\Action.cs" />
     <Compile Include="Battle\Battle.cs" />
-    <Compile Include="Battle\GetParticipants.cs" />
+    <Compile Include="Character\GetParticipants.cs" />
     <Compile Include="Battle\Turn.cs" />
     <Compile Include="ConsoleWriter.cs" />
     <Compile Include="Character\Character.cs" />
