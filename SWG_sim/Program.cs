@@ -9,15 +9,28 @@ namespace SWG_sim
     class Program
     {
         static void Main(string[] args)
-        {            
-            Character character = new Character();
-            Battle battle = new Battle(character.GetCharacters(3));
-            battle.GenerateBattleReport();
+        {
+            try
+            {
+                Character character = new Character();
+                Battle battle = new Battle(character.GetCharacters(5));
+                battle.GenerateBattleReport();
 
-            ConsoleWriter cw = new ConsoleWriter();
-            cw.GenerateBattleReport(battle); 
+                ConsoleWriter cw = new ConsoleWriter();
+                cw.GenerateBattleReport(battle);
 
-            Console.ReadKey();
+                Console.ReadKey();
+            }
+            catch (ArgumentNullException ex)
+            {
+                Console.WriteLine("Wyst¹pi³ b³¹d ArgumentNullException w metodzie Main:" + ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wyst¹pi³ b³¹d w metodzie Main:" + ex);
+                throw;
+            }            
         }
     }
 }

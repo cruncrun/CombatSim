@@ -21,11 +21,11 @@ namespace SWG_sim
         public Weapon()
         {
             Utils utils = new Utils();
-            BaseAttackPower = utils.RandomNumber(6, 10);
+            BaseAttackPower = utils.RandomNumber(10, 16);
             AttackPowerDiceSides = utils.RandomNumber(2, 4);
-            AttackPowerDiceRolls = utils.RandomNumber(6, 10);
+            AttackPowerDiceRolls = utils.RandomNumber(6, 18);
             InitiativeModifier = utils.RandomNumber(0, 11) - 5;
-            AttacksPerTurn = utils.RandomNumber(1, 4);
+            AttacksPerTurn = utils.RandomNumber(1, 3);
             //AttacksPerTurn = 1;
             RemainingAttacks = AttacksPerTurn;
             CriticalChance = utils.RandomNumber(4) + utils.RandomNumber(4) + 5;

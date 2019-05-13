@@ -21,13 +21,13 @@ namespace SWG_sim
             switch (battleResult)
             {
                 case Battle.BattleOutcome.Draw:
-                    System.Console.WriteLine("Walka zakończyła się remisem.", Color.Beige);
+                    Console.WriteLine("Walka zakończyła się remisem.", Color.Beige);
                     break;
                 case Battle.BattleOutcome.AttackersWin:
-                    System.Console.WriteLine("Walka zakończyła się zwycięstwem napastników.", Color.Beige);
+                    Console.WriteLine("Walka zakończyła się zwycięstwem napastników.", Color.Beige);
                     break;
                 case Battle.BattleOutcome.DefendersWin:
-                    System.Console.WriteLine("Walka zakończyła się skuteczną obroną.", Color.Beige);
+                    Console.WriteLine("Walka zakończyła się skuteczną obroną.", Color.Beige);
                     break;
                 default:
                     break;
@@ -87,16 +87,32 @@ namespace SWG_sim
 
         private void RegularHealingMessage(Action action)
         {
-            string baseText = "{0} leczy leśną magią {1} punktów obrażeń. {2} ma {3}/{4} punktów życia.";
-            Formatter[] elements = new Formatter[]
+            if (action.Character != action.Target)
             {
+                string baseText = "{0} leczy leśną magią {1} punktów życia. {2} ma {3}/{4} punktów życia.";
+                Formatter[] elements = new Formatter[]
+                {
                 new Formatter(action.Character.Name, GetCharacterNameColor(action.Character)),
                 new Formatter(action.HealingAmount, Color.Green),
                 new Formatter(action.Target.Name, GetCharacterNameColor(action.Target)),
                 new Formatter(action.Target_EOTValues.RemainingHitPoints, Color.White),
                 new Formatter(action.Target.HitPoints, Color.White)
-            };
-            Console.WriteLineFormatted(baseText, Color.LightGreen, elements);
+                };
+                Console.WriteLineFormatted(baseText, Color.LightGreen, elements);
+            }
+            else if (action.Character == action.Target)
+            {
+                string baseText = "{0} leczy siebie samego, odzyskując {1} punktów życia. {2} ma {3}/{4} punktów życia.";
+                Formatter[] elements = new Formatter[]
+                {
+                new Formatter(action.Character.Name, GetCharacterNameColor(action.Character)),
+                new Formatter(action.HealingAmount, Color.Green),
+                new Formatter(action.Target.Name, GetCharacterNameColor(action.Target)),
+                new Formatter(action.Target_EOTValues.RemainingHitPoints, Color.White),
+                new Formatter(action.Target.HitPoints, Color.White)
+                };
+                Console.WriteLineFormatted(baseText, Color.LightGreen, elements);
+            }            
         }
 
         private void CriticalHealingMessage(Action action)
@@ -126,6 +142,10 @@ namespace SWG_sim
 
         private void ParticipantDetails(Character character)
         {
+            if (character.HealingChance == 100)
+            {
+                character.Name += "+";
+            }
             // Line 1
             string baseTextFirstLine = "{0} \tI: {1}\tSTR: {2}\tDEX: {3}\tTGH: {4}\tDEF: {5}";
             Formatter[] elementsFirstLine = new Formatter[]

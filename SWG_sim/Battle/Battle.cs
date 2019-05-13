@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Threading;
+using static SWG_sim.CombatSim_Enum;
 
 namespace SWG_sim
 {
@@ -15,15 +16,6 @@ namespace SWG_sim
         public List<Character> Participants { get; } = new List<Character>();
         public List<Turn> Turns { get; } = new List<Turn>();
         public BattleOutcome BattleResult { get; set; }
-        #endregion
-
-        #region Enum
-        public enum BattleOutcome
-	    {
-            Draw,
-            AttackersWin,
-            DefendersWin
-	    }
         #endregion
 
         #region Constructors
@@ -38,6 +30,15 @@ namespace SWG_sim
         }
         #endregion
 
+        #region enum
+        public enum BattleOutcome
+        {
+            Draw,
+            AttackersWin,
+            DefendersWin
+        }
+        #endregion
+
         #region Public members
         public void GenerateBattleReport()
         {            
@@ -48,24 +49,38 @@ namespace SWG_sim
         #region Private members
         private void BattleReport()
         {
-            for (int turnIterator = 1; turnIterator <= 12 && AreThereAnyParticipantsLeft(Participants); turnIterator++)
+            try
             {
-                List<Character> aliveParticipants = GetAliveParticipants(Participants);
+                for (int turnIterator = 1; turnIterator <= 12 && AreThereAnyParticipantsLeft(Participants); turnIterator++)
+                {
+                    List<Character> aliveParticipants = GetAliveParticipants(Participants);
 
-                Turn turn = new Turn(turnIterator, aliveParticipants);                              
+                    Turn turn = new Turn(turnIterator, aliveParticipants);
 
-                for (int i = 1; AreThereAnyAttacksLeft(aliveParticipants) && AreThereAnyParticipantsLeft(aliveParticipants); i++)
-                {                    
-                    List<Character> attackingParticipants = InitiativeCheck(aliveParticipants, i);
-                    if (attackingParticipants.Count != 0)
+                    for (int i = 1; AreThereAnyAttacksLeft(aliveParticipants) && AreThereAnyParticipantsLeft(aliveParticipants); i++)
                     {
-                        PerformAllActions(aliveParticipants, turn, attackingParticipants);
+                        List<Character> attackingParticipants = InitiativeCheck(aliveParticipants, i);
+                        if (attackingParticipants.Count != 0)
+                        {
+                            PerformAllActions(aliveParticipants, turn, attackingParticipants);
+                        }
                     }
-                }  
-                Turns.Add(turn);
-                TurnReset(Participants);                
+                    Turns.Add(turn);
+                    TurnReset(Participants);
+                }
+                BattleResultCheck(GetAliveParticipants(Participants));
             }
-            BattleResultCheck(GetAliveParticipants(Participants));
+            catch (ArgumentNullException ex)
+            {
+                Console.WriteLine("Wystąpił błąd ArgumentNullException w metodzie BattleReport:" + ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wystąpił błąd w metodzie BattleReport:" + ex);
+                throw;
+            }
+
         }
 
         private void BattleResultCheck(List<Character> participants)

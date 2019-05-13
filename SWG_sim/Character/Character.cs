@@ -86,7 +86,7 @@ namespace SWG_sim
             Weapon = new Weapon();
             Armor = new Armor();
             Name = name;
-            HitPoints = 100 + utils.RandomNumber(51);            
+            HitPoints = 150 + utils.RandomNumber(101);            
             RemainingHitPoints = HitPoints;
             ManaPoints = 20;
             RemainingManaPoints = ManaPoints;            
@@ -145,16 +145,24 @@ namespace SWG_sim
 
         public List<Character> GetCharacters(int amount)
         {
-            List<Character> characters = new List<Character>();
-            for (int i = 0; i < amount; i++)
+            try
             {
-                characters.Add(GenerateCharacter(true, i));
+                List<Character> characters = new List<Character>();
+                for (int i = 0; i < amount; i++)
+                {
+                    characters.Add(GenerateCharacter(true, i));
+                }
+                for (int i = 0; i < amount; i++)
+                {
+                    characters.Add(GenerateCharacter(false, i));
+                }
+                return characters;
             }
-            for (int i = 0; i < amount; i++)
+            catch (Exception ex)
             {
-                characters.Add(GenerateCharacter(false, i));
+                Console.WriteLine("Wystąpił błąd w metodzie GetCharacters:" + ex);
+                throw;
             }
-            return characters;
         }
 
         #endregion
@@ -162,13 +170,21 @@ namespace SWG_sim
         #region Private members 
         private Character GenerateCharacter(bool isAttacker, int i)
         {
-            switch (isAttacker)
+            try
             {
-                case true:
-                    return new Character("Atakujący " + i, true);
-                case false:
-                    return new Character("Obrońca " + i, false);
-                default:
+                switch (isAttacker)
+                {
+                    case true:
+                        return new Character("Atakujący " + i, true);
+                    case false:
+                        return new Character("Obrońca " + i, false);
+                    default:
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wystąpił błąd w metodzie GenerateCharacter:" + ex);
+                throw;
             }
         }
 

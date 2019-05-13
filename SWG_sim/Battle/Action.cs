@@ -18,8 +18,7 @@ namespace SWG_sim
         public Character Character { get; set; }
         public Character Target { get; set; }
         public Character Target_EOTValues { get; set; }
-        public List<Character> AliveParticipants { get; set; }
-        public bool CleanupDone { get; set; }
+        public List<Character> AliveParticipants { get; set; }        
         public int DamageAmount
         {
             get
@@ -39,18 +38,12 @@ namespace SWG_sim
             }
             set
             {
-                if (value <= 0)
-                {
-                    healingAmount = 1;
-                }
-                else
-                {
-                    healingAmount = value;
-                }
+                healingAmount = value <= 0 ? 1 : value;
             }
         }
         public bool IsAccurate { get; set; }
         public bool IsCritical { get; set; }
+        public bool CleanupDone { get; set; }
         #endregion
 
         #region Constructors
@@ -76,11 +69,11 @@ namespace SWG_sim
         public void PerformAction(Action action)
         {
             switch (action.ActionTypeId)
-            {
+            {                
                 case ActionType.SingleTargetAttack:
                     action.Target = SelectEnemyTarget(action);
 
-                    if (action.Target != null && action.Target.Name != "Nie ma")
+                    if (action.Target != null)
                     {
                         CheckForHit(action.Character.Dexterity, action.Target.Dexterity);
                         if (IsAccurate)
@@ -94,7 +87,7 @@ namespace SWG_sim
                 case ActionType.SingleTargetHealing:
                     action.Target = SelectAlliedTarget(action);
 
-                    if (action.Target != null && action.Target.Name != "Nie ma")
+                    if (action.Target != null)
                     {
                         CheckForCritialHit(action.Character.Weapon.CriticalChance);
                         CalculateHealing(action);                        
@@ -123,7 +116,7 @@ namespace SWG_sim
                 Character opponent = opponentsList[utils.RandomNumber(opponentsList.Count)];
                 return opponent;
             }
-            return new Character("Nie ma");
+            return null;
         }
 
         public Character SelectAlliedTarget(Action healing)
@@ -135,13 +128,13 @@ namespace SWG_sim
                 Character opponent = opponentsList[utils.RandomNumber(opponentsList.Count)];
                 return opponent;
             }
-            return new Character("Nie ma");
+            return null;
         }
 
         public ActionType GetActionTypeId(Character character)
         {
             Utils utils = new Utils();
-            if (utils.RandomNumber(101) <= character.HealingChance)
+            if (character.HealingChance > 0)
             {
                 return ActionType.SingleTargetHealing;
             }
@@ -225,8 +218,7 @@ namespace SWG_sim
             {
                 CalculateDamageDone(attack);
                 if (attack.Target.RemainingHitPoints <= 0)
-                {
-                    //ConsoleWriter.DeathMessage(attack.Opponent.Name);                
+                {                                   
                     attack.Character.KillCount++;
                     attack.Target.IsAlive = false;
                 }
@@ -248,8 +240,9 @@ namespace SWG_sim
         private void CheckForHit(int attackerDex, int defenderDex)
         {
             IsAccurate = false;
+            int hitModifier = attackerDex - defenderDex;
             Utils utils = new Utils();
-            if (utils.RandomNumber(100) <= 90 + attackerDex - defenderDex)
+            if (utils.RandomNumber(100) <= 90 + hitModifier)
             {
                 IsAccurate = true;
             }

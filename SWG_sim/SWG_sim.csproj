@@ -62,7 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Battle\Action.cs" />
+    <Compile Include="Battle\SingleTargetAttack.cs" />
     <Compile Include="Battle\Battle.cs" />
+    <Compile Include="Battle\SingleTargetHeal.cs" />
+    <Compile Include="Interface\IAction.cs" />
     <Compile Include="Character\GetParticipants.cs" />
     <Compile Include="Battle\Turn.cs" />
     <Compile Include="ConsoleWriter.cs" />
@@ -75,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Compile Include="Battle\BattleEnum.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
