@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWG_sim", "SWG_sim\SWG_sim.csproj", "{920698DA-15B2-4409-9C8B-DED88A9205F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWG_sim.Tests", "SWG_sim.Tests\SWG_sim.Tests.csproj", "{826BC10F-D0F8-4E6F-A562-A12CBE2119A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{920698DA-15B2-4409-9C8B-DED88A9205F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{920698DA-15B2-4409-9C8B-DED88A9205F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{920698DA-15B2-4409-9C8B-DED88A9205F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{826BC10F-D0F8-4E6F-A562-A12CBE2119A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{826BC10F-D0F8-4E6F-A562-A12CBE2119A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{826BC10F-D0F8-4E6F-A562-A12CBE2119A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{826BC10F-D0F8-4E6F-A562-A12CBE2119A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
