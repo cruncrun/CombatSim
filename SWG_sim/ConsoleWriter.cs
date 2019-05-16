@@ -52,9 +52,9 @@ namespace SWG_sim
                 switch (action.ActionTypeId)
                 {
                     case Action.ActionType.SingleTargetAttack:
-                        if (action.IsAccurate)
+                        if (action.AccurateHitCheck.IsAccurate)
                         {
-                            if (action.IsCritical)
+                            if (action.CriticalHitCheck.IsCritical)
                             {
                                 CriticalHitMessage(action);
                             }

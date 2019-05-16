@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    public class Action
+    public class Attack : IAction
     {
         #region Properties
         private int damageAmount;
@@ -41,13 +41,15 @@ namespace SWG_sim
                 healingAmount = value <= 0 ? 1 : value;
             }
         }
-        public ActionAccurateHit AccurateHitCheck { get; set; }
-        public ActionCriticalHit CriticalHitCheck { get; set; }
+        public bool IsAccurate { get; set; }
+        public bool IsCritical { get; set; }
         public bool CleanupDone { get; set; }
+        CombatSim_Enum.ActionType IAction.ActionTypeId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        List<Character> IAction.Target { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         #endregion
 
         #region Constructors
-        public Action(Character character, List<Character> aliveParticipants)
+        public Attack(Character character, List<Character> aliveParticipants)
         {
             Character = character;
             AliveParticipants = aliveParticipants;
@@ -66,7 +68,7 @@ namespace SWG_sim
         #endregion
 
         #region Public members
-        public void PerformAction(Action action)
+        public void PerformAction(Attack action)
         {
             switch (action.ActionTypeId)
             {                
@@ -76,10 +78,10 @@ namespace SWG_sim
                     if (action.Target != null)
                     {
                         CheckForHit(action.Character.Dexterity, action.Target.Dexterity);
-                        if (AccurateHitCheck.IsAccurate)
+                        if (IsAccurate)
                         {
                             CheckForCritialHit(action.Character.Weapon.CriticalChance);
-                            CalculateAttack(action);
+                            CalculateAttack();
                         }
                     }
                     break;
@@ -107,7 +109,7 @@ namespace SWG_sim
 
         }
 
-        public Character SelectEnemyTarget(Action attack)
+        public Character SelectEnemyTarget(Attack attack)
         {
             Utils utils = new Utils();
             List<Character> opponentsList = GetListOfTargets(attack.Character.IsAttacker, attack.AliveParticipants);
@@ -119,7 +121,7 @@ namespace SWG_sim
             return null;
         }
 
-        public Character SelectAlliedTarget(Action healing)
+        public Character SelectAlliedTarget(Attack healing)
         {
             Utils utils = new Utils();
             List<Character> opponentsList = GetListOfTargets(!healing.Character.IsAttacker, healing.AliveParticipants);
@@ -133,38 +135,38 @@ namespace SWG_sim
 
         public ActionType GetActionTypeId(Character character)
         {
-            Utils utils = new Utils();
-            if (character.HealingChance > 0)
-            {
-                return ActionType.SingleTargetHealing;
-            }
-            else
-            {
-                return ActionType.SingleTargetAttack;
-            }
+            //if (character.HealingChance > 0)
+            //{
+            //    return ActionType.SingleTargetHealing;
+            //}
+            //else
+            //{
+            //    return ActionType.SingleTargetAttack;
+            //}
+            return ActionType.SingleTargetAttack;
         }
         #endregion
 
         #region Private members
-        private void CalculateDamageDone(Action attack)
+        private void CalculateDamageDone()
         {
-            attack.DamageAmount = (attack.Character.Strength / 2) + GetWeaponDamage(attack.Character.Weapon);
+            DamageAmount = (Character.Strength / 2) + GetWeaponDamage(Character.Weapon);
             /*
             TODO: Zdecydować, czy zwiększenie zadawanych obrażeń związanych z trafieniem krytycznym jest rozpatrywane
             przed czy po uwzględnieniu pancerza.
             */
-            attack.DamageAmount -= attack.Target.DefencePoints;
-            if (attack.CriticalHitCheck.IsCritical)
+            DamageAmount -= Target.DefencePoints;
+            if (IsCritical)
             {
-                attack.DamageAmount *= 2;
+                DamageAmount *= 2;
             }
             
-            attack.Character.DamageDone += attack.DamageAmount;
-            attack.Target.RemainingHitPoints -= attack.DamageAmount;
-            attack.Target.DamageTaken += attack.DamageAmount;
+            Character.DamageDone += DamageAmount;
+            Target.RemainingHitPoints -= DamageAmount;
+            Target.DamageTaken += DamageAmount;
         }
 
-        private void CalculateHealing(Action healing)
+        private void CalculateHealing(Attack healing)
         {
             if (healing.Character.IsAlive
                 && healing.Target.IsAlive
@@ -172,7 +174,7 @@ namespace SWG_sim
             {
                 healing.HealingAmount = GetWeaponDamage(healing.Character.Weapon);
 
-                if (healing.CriticalHitCheck.IsCritical)
+                if (healing.IsCritical)
                 {
                     healing.HealingAmount *= 2;
                 }
@@ -212,20 +214,20 @@ namespace SWG_sim
             return aliveTargets;
         }
 
-        private void CalculateAttack(Action attack)
+        private void CalculateAttack()
         {
-            if (attack.Character.IsAlive && attack.Target.IsAlive)
+            if (Character.IsAlive && Target.IsAlive)
             {
-                CalculateDamageDone(attack);
-                if (attack.Target.RemainingHitPoints <= 0)
+                CalculateDamageDone();
+                if (Target.RemainingHitPoints <= 0)
                 {                                   
-                    attack.Character.KillCount++;
-                    attack.Target.IsAlive = false;
+                    Character.KillCount++;
+                    Target.IsAlive = false;
                 }
             }
         }
 
-        private static void AttackCleanUp(Action action)
+        private static void AttackCleanUp(Attack action)
         {
             if (!action.CleanupDone)
             {
@@ -239,12 +241,66 @@ namespace SWG_sim
 
         private void CheckForHit(int attackerDex, int defenderDex)
         {
-            AccurateHitCheck = new ActionAccurateHit(attackerDex, defenderDex);
+            IsAccurate = false;
+            int hitModifier = attackerDex - defenderDex;
+            Utils utils = new Utils();
+            if (utils.RandomNumber(100) <= 90 + hitModifier)
+            {
+                IsAccurate = true;
+            }
         }
 
         private void CheckForCritialHit(int weaponCriticalChance)
         {
-            CriticalHitCheck = new ActionCriticalHit(weaponCriticalChance);            
+            IsCritical = false;
+            Utils utils = new Utils();
+            if (utils.RandomNumber(100) <= weaponCriticalChance)
+            {
+                IsCritical = true;
+            }
+        }
+
+        public void PerformAction()
+        {
+            if (Target != null)
+            {
+                CheckForHit(Character.Dexterity, Target.Dexterity);
+                if (IsAccurate)
+                {
+                    CheckForCritialHit(Character.Weapon.CriticalChance);
+                    CalculateAttack();
+                }
+            }
+        }
+
+        public void TargetSelection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CheckForHit()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CheckForCriticalHit()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetWeaponDamage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CalculateAmountDone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ActionCleanup()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

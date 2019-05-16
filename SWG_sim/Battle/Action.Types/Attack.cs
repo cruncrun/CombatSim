@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SWG_sim
 {
-    //class SingleTargetAttack : Action
-    //{
-    //}
+    class Attack
+    {
+
+    }
 }

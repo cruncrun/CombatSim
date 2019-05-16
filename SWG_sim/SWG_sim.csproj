@@ -61,10 +61,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Battle\Action.Components\ActionAccurateHit.cs" />
+    <Compile Include="Battle\Action.Components\ActionCriticalHit.cs" />
     <Compile Include="Battle\Action.cs" />
-    <Compile Include="Battle\SingleTargetAttack.cs" />
+    <Compile Include="Battle\Action.Types\Attack.cs" />
     <Compile Include="Battle\Battle.cs" />
-    <Compile Include="Battle\SingleTargetHeal.cs" />
+    <Compile Include="Battle\Action.Types\Heal.cs" />
     <Compile Include="Interface\IAction.cs" />
     <Compile Include="Character\GetParticipants.cs" />
     <Compile Include="Battle\Turn.cs" />
@@ -84,6 +86,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

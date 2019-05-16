@@ -12,7 +12,7 @@ namespace SWG_sim
         #region Properties
         ActionType ActionTypeId { get; set; }
         Character Character { get; set; }
-        Character Target { get; set; }
+        List<Character> Target { get; set; }
         Character Target_EOTValues { get; set; }
         List<Character> AliveParticipants { get; set; }        
         bool IsAccurate { get; set; }
@@ -21,10 +21,10 @@ namespace SWG_sim
         #endregion
 
         #region Methods
-        void PerformAction();
-        void TargetSelection();
-        void CheckForHit();
-        void CheckForCriticalHit();
+        void PerformAction(IAction action);
+        List<Character> TargetSelection(IAction action);
+        bool CheckForHit();
+        bool CheckForCriticalHit();
         void GetWeaponDamage();
         void CalculateAmountDone();
         void ActionCleanup();
